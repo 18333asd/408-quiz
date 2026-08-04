@@ -119,16 +119,21 @@ function renderXztQuestion(subject, sec, num, next) {
       '<button class="btn" id="p-next"' + (idx >= qs.length - 1 ? ' disabled' : '') + '>下一题 →</button>' +
       '</div></div>';
     const optsEl = $('#p-opts');
+    const opts = q[4] || [];
     const sel = new Set();
     if (isOpts) {
-      optsEl.innerHTML = ['A', 'B', 'C', 'D'].map(L => '<div class="opt" data-l="' + L + '">' + L + '</div>').join('');
+      optsEl.innerHTML = (opts.length ? opts : ['A', 'B', 'C', 'D']).map(t => {
+        const L = t[0];
+        return '<div class="opt" data-l="' + L + '">' + esc(t) + '</div>';
+      }).join('');
       $$('#p-opts .opt').forEach(o => o.onclick = () => {
         if (!multi) { $$('#p-opts .opt').forEach(x => x.classList.remove('sel')); sel.clear(); }
         if (sel.has(o.dataset.l)) { sel.delete(o.dataset.l); o.classList.remove('sel'); }
         else { sel.add(o.dataset.l); o.classList.add('sel'); }
       });
     } else {
-      optsEl.innerHTML = '<input type="text" id="p-txt" placeholder="输入你的答案，如 CD 或 ①I、IV…" style="width:100%">';
+      optsEl.innerHTML = '<input type="text" id="p-txt" placeholder="输入你的答案，如 CD 或 ①I、IV…" style="width:100%">' +
+        (opts.length ? '<div class="hint-line">选项参考：' + opts.map(esc).join('　') + '</div>' : '');
     }
     const reveal = (mine, ok, right) => {
       $('#p-sub').disabled = true;
@@ -237,7 +242,9 @@ function viewCt() {
       if (item.classList.contains('open') && body) {
         load(m.subject).then(d => {
           const q = (d.sections[m.sec] && d.sections[m.sec].qs.find(x => x[0] === m.num));
-          if (q) body.innerHTML = '<div class="dim">' + esc(q[2]) + '</div><div class="expl">' + esc(q[3] || '（教材无文字解析）') + '</div>';
+          if (q) body.innerHTML = '<div class="dim">' + esc(q[2]) + '</div>' +
+            ((q[4] && q[4].length) ? '<div class="hint-line">' + q[4].map(esc).join('　') + '</div>' : '') +
+            '<div class="expl">' + esc(q[3] || '（教材无文字解析）') + '</div>';
           else body.innerHTML = '（该题数据不存在，可能已更新）';
         });
       }
