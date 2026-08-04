@@ -11,6 +11,7 @@ const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const norm = s => String(s || '').replace(/[①②③④]/g, c => ({ '①': '1', '②': '2', '③': '3', '④': '4' }[c]))
   .replace(/[\s、，,。.．·（）()【】\[\]“”"']/g, '').toUpperCase();
+const imgHtml = rel => rel ? '<img class="fig" src="data/' + encodeURI(rel) + '" alt="配图" loading="lazy">' : '';
 
 function load(subject) {
   if (cache[subject]) return Promise.resolve(cache[subject]);
@@ -91,7 +92,7 @@ function renderXztList(subject, sec) {
     $('#p-body').innerHTML = '<div class="list">' + v.qs.map(q => {
       const st = prog[q[0]];
       const tag = st ? (st.ok ? '<span class="tag ok">✓</span>' : '<span class="tag bad">✗</span>') : '';
-      return '<div class="row" data-i="' + q[0] + '"><span class="no">' + q[0] + '</span><span class="stem">' + esc(q[2]) + '</span>' + tag + '</div>';
+      return '<div class="row" data-i="' + q[0] + '"><span class="no">' + q[0] + '</span><span class="stem clamp">' + esc(q[2]) + '</span>' + tag + '</div>';
     }).join('') + '</div>';
     $$('#p-body .row').forEach(r => r.onclick = () => renderXztQuestion(subject, sec, Number(r.dataset.i), false));
   });
@@ -108,6 +109,7 @@ function renderXztQuestion(subject, sec, num, next) {
     body.innerHTML = '<div class="panel">' +
       '<div class="small">' + esc(d.name) + ' · ' + sec + ' ' + esc(v.title) + ' · 第 ' + q[0] + ' 题' + (multi ? '（多选）' : '') + '</div>' +
       '<h3 class="stem-text">' + esc(q[2]) + '</h3>' +
+      imgHtml(q[5]) +
       '<div class="opts" id="p-opts"></div>' +
       '<div class="act-row">' +
       '<button class="btn primary" id="p-sub">提交答案</button>' +
@@ -187,7 +189,7 @@ function viewDt() {
 function renderDtList(d) {
   const v = d.sections[S.dt.sec];
   $('#d-body').innerHTML = '<div class="list">' + v.bigq.map(b =>
-    '<div class="row" data-i="' + b[0] + '"><span class="no">' + b[0] + '</span><span class="stem">' + esc(b[1]) + '</span></div>'
+    '<div class="row" data-i="' + b[0] + '"><span class="no">' + b[0] + '</span><span class="stem clamp">' + esc(b[1]) + '</span></div>'
   ).join('') + '</div>';
   $$('#d-body .row').forEach(r => r.onclick = () => renderDtDetail(d, Number(r.dataset.i)));
 }
@@ -199,6 +201,7 @@ function renderDtDetail(d, num) {
   body.innerHTML = '<div class="panel">' +
     '<div class="small">' + esc(d.name) + ' · ' + S.dt.sec + ' ' + esc(v.title) + ' · 综合应用题第 ' + b[0] + ' 题</div>' +
     '<h3 class="stem-text">' + esc(b[1]) + '</h3>' +
+    imgHtml(b[4]) +
     '<div class="act-row">' +
     '<button class="btn" id="d-hint">💡 思路引导</button>' +
     '<button class="btn primary" id="d-ans">显示解答</button>' +
@@ -213,7 +216,8 @@ function renderDtDetail(d, num) {
   $('#d-ans').onclick = () => {
     const r = $('#d-ansbox');
     r.className = 'result show';
-    r.innerHTML = '<b>参考解答</b><div class="expl">' + esc(b[2] || '（解答待核，请翻教材）') + '</div>';
+    r.innerHTML = '<b>参考解答</b><div class="expl">' + esc(b[2] || '（解答待核，请翻教材）') + '</div>' +
+      imgHtml(b[5]);
   };
   body.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -243,6 +247,7 @@ function viewCt() {
         load(m.subject).then(d => {
           const q = (d.sections[m.sec] && d.sections[m.sec].qs.find(x => x[0] === m.num));
           if (q) body.innerHTML = '<div class="dim">' + esc(q[2]) + '</div>' +
+            imgHtml(q[5]) +
             ((q[4] && q[4].length) ? '<div class="hint-line">' + q[4].map(esc).join('　') + '</div>' : '') +
             '<div class="expl">' + esc(q[3] || '（教材无文字解析）') + '</div>';
           else body.innerHTML = '（该题数据不存在，可能已更新）';

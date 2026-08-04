@@ -47,6 +47,7 @@ select:focus,input:focus{outline:2px solid var(--acc-soft)}
 .row:hover{border-color:var(--acc)}
 .row .no{display:inline-block;min-width:36px;font-weight:800;color:var(--acc)}
 .row .stem{color:var(--ink)}
+.row .stem.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap}
 .tag{margin-left:8px;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--line);color:var(--sub)}
 .tag.ok{background:var(--ok-soft);color:var(--ok)}
 .tag.bad{background:var(--bad-soft);color:var(--bad)}
@@ -55,6 +56,7 @@ select:focus,input:focus{outline:2px solid var(--acc-soft)}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px}
 .panel h3{margin:0 0 8px}
 .stem-text{white-space:pre-wrap;font-size:15px}
+.fig{display:block;max-width:100%;height:auto;margin:10px auto;border:1px solid var(--line);border-radius:10px;background:#fff}
 .opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .opt{border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;font-size:14px;background:var(--card)}
 .opt:hover{border-color:var(--acc)}
